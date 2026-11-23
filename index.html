@@ -6,6 +6,12 @@
     <title>Generator Perangkat Ajar AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Library KaTeX untuk merender pecahan & rumus matematika -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -33,9 +39,9 @@
         .prose strong { font-weight: 700; color: #111827; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-4 md:p-8">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-4 md:p-8 flex flex-col justify-between">
 
-    <div class="max-w-4xl mx-auto space-y-8">
+    <div class="max-w-4xl w-full mx-auto space-y-8">
         
         <!-- Header -->
         <div class="text-center no-print mt-4">
@@ -145,6 +151,13 @@
 
     </div>
 
+    <!-- Footer / Watermark -->
+    <footer class="no-print text-center mt-12 pb-4">
+        <p class="text-sm text-gray-500">
+            Dikembangkan oleh <span class="font-semibold text-gray-700">Dian Agung Pamungkas, S.Pd</span>
+        </p>
+    </footer>
+
     <script>
         const WORKER_URL = "https://perangkat-ajar-proxy.dianpamungkas24.workers.dev/";
 
@@ -173,7 +186,7 @@
             generateBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
             const promptText = `Buatkan ${jenis} untuk mata pelajaran ${mapel} kelas ${kelas} dengan topik/materi: ${topik}. 
-            Berikan struktur yang lengkap, profesional, dan menggunakan pedoman kurikulum yang berlaku di Indonesia. Tuliskan dalam format Markdown yang rapi tanpa perlu basa-basi pengantar.`;
+            Berikan struktur yang lengkap, profesional, dan menggunakan pedoman kurikulum yang berlaku di Indonesia. Jika menuliskan rumus atau pecahan matematika, wajib gunakan format LaTeX dengan tanda dolar seperti $\\frac{1}{2}$. Tuliskan dalam format Markdown yang rapi tanpa perlu basa-basi pengantar.`;
 
             try {
                 const response = await fetch(WORKER_URL, {
@@ -190,6 +203,18 @@
 
                 rawGeneratedText = data.choices[0].message.content;
                 outputContent.innerHTML = marked.parse(rawGeneratedText);
+
+                // Render rumus matematika (\frac, dll) menjadi pecahan rapi
+                renderMathInElement(outputContent, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false
+                });
+
                 resultSection.classList.remove('hidden');
 
             } catch (error) {
