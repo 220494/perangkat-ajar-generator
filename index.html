@@ -38,6 +38,9 @@
         .prose th, .prose td { border: 1px solid #d1d5db; padding: 0.75rem; text-align: left; }
         .prose th { background-color: #f3f4f6; font-weight: 600; }
         .prose strong { font-weight: 700; color: #111827; }
+        
+        /* Pengecualian border untuk tabel tanda tangan di tampilan web */
+        .ttd-table, .ttd-table td { border: none !important; padding: 0 !important; background: transparent !important; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-4 md:p-8 flex flex-col justify-between">
@@ -114,9 +117,34 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">Topik / Materi Pembelajaran</label>
                     <textarea id="topik" rows="3" placeholder="Contoh: Operasi Hitung Pecahan Campuran, Siklus Air, atau Menulis Teks Deskripsi..." class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition shadow-sm bg-gray-50 text-gray-700 hover:bg-white resize-none"></textarea>
                 </div>
+
+                <!-- Kolom Pengesahan (Tanda Tangan) -->
+                <div class="md:col-span-2 pt-3 border-t border-gray-100">
+                    <p class="text-xs font-bold uppercase tracking-wider text-blue-600 mb-3">Data Lembar Pengesahan (Opsional)</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Kota & Tanggal Pengesahan</label>
+                            <input type="text" id="tempatTanggal" placeholder="Contoh: Palembang, 23 November 2026" class="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 hover:bg-white">
+                        </div>
+                        <div></div>
+                        
+                        <div class="space-y-2 bg-gray-50 p-3.5 rounded-xl border border-gray-100">
+                            <p class="text-xs font-bold text-gray-700">Kepala Sekolah</p>
+                            <input type="text" id="namaKepsek" placeholder="Nama Lengkap & Gelar Kepala Sekolah" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                            <input type="text" id="nipKepsek" placeholder="NIP. (Kosongkan jika tidak ada)" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        </div>
+
+                        <div class="space-y-2 bg-gray-50 p-3.5 rounded-xl border border-gray-100">
+                            <p class="text-xs font-bold text-gray-700">Guru Mata Pelajaran / Kelas</p>
+                            <input type="text" id="namaGuru" value="Dian Agung Pamungkas, S.Pd" placeholder="Nama Lengkap & Gelar Guru" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                            <input type="text" id="nipGuru" placeholder="NIP. (Kosongkan jika tidak ada)" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <button id="generateBtn" onclick="generateDocument()" class="w-full mt-7 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl transform transition-all active:scale-[0.98] flex justify-center items-center gap-2 text-lg">
+            <button id="generateBtn" type="button" onclick="generateDocument()" class="w-full mt-7 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl transform transition-all active:scale-[0.98] flex justify-center items-center gap-2 text-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                 <span>Buat Dokumen Sekarang</span>
             </button>
@@ -136,15 +164,15 @@
         <div id="resultSection" class="hidden bg-white p-6 md:p-10 rounded-2xl shadow-xl border border-gray-100 relative">
             
             <div class="no-print flex flex-wrap justify-end gap-3 mb-8 border-b pb-5">
-                <button onclick="copyText()" class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl transition flex items-center gap-2">
+                <button type="button" onclick="copyText()" class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                     Salin Teks
                 </button>
-                <button onclick="exportToWord()" class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-semibold rounded-xl shadow-md transition flex items-center gap-2">
+                <button type="button" onclick="exportToWord()" class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-semibold rounded-xl shadow-md transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     Unduh Word (A4)
                 </button>
-                <button onclick="window.print()" class="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white text-sm font-semibold rounded-xl shadow-md transition flex items-center gap-2">
+                <button type="button" onclick="window.print()" class="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white text-sm font-semibold rounded-xl shadow-md transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                     Cetak / Unduh PDF
                 </button>
@@ -152,6 +180,9 @@
 
             <!-- Konten Markdown akan dirender di sini -->
             <div id="outputContent" class="prose max-w-none text-gray-800"></div>
+            
+            <!-- Blok Tanda Tangan Pengesahan -->
+            <div id="signatureBlock" class="mt-12 pt-4"></div>
         </div>
 
     </div>
@@ -171,7 +202,64 @@
         const errorMessage = document.getElementById('errorMessage');
         const resultSection = document.getElementById('resultSection');
         const outputContent = document.getElementById('outputContent');
+        const signatureBlock = document.getElementById('signatureBlock');
         let rawGeneratedText = "";
+
+        function buildSignatureHTML(isForWord = false) {
+            const tempatTanggal = document.getElementById('tempatTanggal').value.trim() || "......................., ...................... 2026";
+            const namaKepsek = document.getElementById('namaKepsek').value.trim() || "................................................";
+            const nipKepsek = document.getElementById('nipKepsek').value.trim();
+            const namaGuru = document.getElementById('namaGuru').value.trim() || "................................................";
+            const nipGuru = document.getElementById('nipGuru').value.trim();
+
+            const teksNipKepsek = nipKepsek ? `NIP. ${nipKepsek}` : "NIP. ........................................";
+            const teksNipGuru = nipGuru ? `NIP. ${nipGuru}` : "NIP. ........................................";
+
+            if (isForWord) {
+                return `
+                    <br><br>
+                    <table style="width: 100%; border: none; border-collapse: collapse; margin-top: 24pt; page-break-inside: avoid;">
+                        <tr>
+                            <td style="width: 50%; border: none; vertical-align: top; text-align: left; padding: 0;">
+                                <p style="margin: 0;">Mengetahui,</p>
+                                <p style="margin: 0;">Kepala Sekolah</p>
+                                <br><br><br><br>
+                                <p style="margin: 0; font-weight: bold; text-decoration: underline;">${namaKepsek}</p>
+                                <p style="margin: 0;">${teksNipKepsek}</p>
+                            </td>
+                            <td style="width: 50%; border: none; vertical-align: top; text-align: left; padding-left: 40pt;">
+                                <p style="margin: 0;">${tempatTanggal}</p>
+                                <p style="margin: 0;">Guru Mata Pelajaran / Kelas</p>
+                                <br><br><br><br>
+                                <p style="margin: 0; font-weight: bold; text-decoration: underline;">${namaGuru}</p>
+                                <p style="margin: 0;">${teksNipGuru}</p>
+                            </td>
+                        </tr>
+                    </table>
+                `;
+            }
+
+            return `
+                <table class="ttd-table w-full mt-10 text-gray-800 text-sm md:text-base">
+                    <tr>
+                        <td class="w-1/2 align-top pr-4">
+                            <p class="m-0">Mengetahui,</p>
+                            <p class="m-0">Kepala Sekolah</p>
+                            <div class="h-20"></div>
+                            <p class="m-0 font-bold underline">${namaKepsek}</p>
+                            <p class="m-0 text-sm">${teksNipKepsek}</p>
+                        </td>
+                        <td class="w-1/2 align-top pl-4 md:pl-16">
+                            <p class="m-0">${tempatTanggal}</p>
+                            <p class="m-0">Guru Mata Pelajaran / Kelas</p>
+                            <div class="h-20"></div>
+                            <p class="m-0 font-bold underline">${namaGuru}</p>
+                            <p class="m-0 text-sm">${teksNipGuru}</p>
+                        </td>
+                    </tr>
+                </table>
+            `;
+        }
 
         async function generateDocument() {
             const mapel = document.getElementById('mapel').value;
@@ -190,8 +278,8 @@
             generateBtn.disabled = true;
             generateBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
-            const promptText = `Buatkan ${jenis} untuk mata pelajaran${mapel} kelas ${kelas} dengan topik/materi:${topik}. 
-            Berikan struktur yang lengkap, profesional, dan menggunakan pedoman kurikulum yang berlaku di Indonesia. Jika menuliskan rumus atau pecahan matematika, wajib gunakan format LaTeX dengan tanda dolar seperti $\\frac{1}{2}$. Tuliskan dalam format Markdown yang rapi tanpa perlu basa-basi pengantar.`;
+            const promptText = `Buatkan ${jenis} untuk mata pelajaran ${mapel} kelas ${kelas} dengan topik/materi: ${topik}. 
+            Berikan struktur yang lengkap, profesional, dan menggunakan pedoman kurikulum yang berlaku di Indonesia. Jika menuliskan rumus atau pecahan matematika, wajib gunakan format LaTeX dengan tanda dolar seperti $\\frac{1}{2}$. Tuliskan dalam format Markdown yang rapi tanpa perlu basa-basi pengantar dan tanpa membuat kolom tanda tangan di bagian akhir.`;
 
             try {
                 const response = await fetch(WORKER_URL, {
@@ -209,17 +297,20 @@
                 rawGeneratedText = data.choices[0].message.content;
                 outputContent.innerHTML = marked.parse(rawGeneratedText);
 
-                // Render rumus matematika (\frac, dll) menjadi pecahan rapi
-                renderMathInElement(outputContent, {
-                    delimiters: [
-                        {left: '$$', right: '$$', display: true},
-                        {left: '$', right: '$', display: false},
-                        {left: '\\(', right: '\\)', display: false},
-                        {left: '\\[', right: '\\]', display: true}
-                    ],
-                    throwOnError: false
-                });
+                if (typeof renderMathInElement === 'function') {
+                    renderMathInElement(outputContent, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\(', right: '\\)', display: false},
+                            {left: '\\[', right: '\\]', display: true}
+                        ],
+                        throwOnError: false
+                    });
+                }
 
+                // Tampilkan kolom tanda tangan di bawah hasil
+                signatureBlock.innerHTML = buildSignatureHTML(false);
                 resultSection.classList.remove('hidden');
 
             } catch (error) {
@@ -244,7 +335,6 @@
         function exportToWord() {
             if (!rawGeneratedText) return;
 
-            // Mengubah sintaks pecahan LaTeX menjadi bentuk pecahan standar agar rapi saat dibuka di MS Word
             let wordReadyMarkdown = rawGeneratedText
                 .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1/$2')
                 .replace(/\\times/g, '×')
@@ -253,14 +343,12 @@
                 .replace(/\\leq/g, '≤')
                 .replace(/\\geq/g, '≥')
                 .replace(/\\neq/g, '≠')
-                .replace(/\\\(/g, '')
-                .replace(/\\\)/g, '')
                 .replace(/\$\$/g, '')
                 .replace(/\$/g, '');
 
             const parsedHtml = marked.parse(wordReadyMarkdown);
+            const wordSignature = buildSignatureHTML(true);
 
-            // Struktur dokumen HTML-Word dengan konfigurasi kertas A4 (21cm x 29.7cm)
             const wordTemplate = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' 
                       xmlns:w='urn:schemas-microsoft-com:office:word' 
@@ -282,4 +370,37 @@
                         h2 { font-size: 14pt; font-weight: bold; margin-top: 12pt; margin-bottom: 4pt; }
                         h3 { font-size: 12pt; font-weight: bold; margin-top: 10pt; margin-bottom: 4pt; }
                         p { margin-top: 0; margin-bottom: 6pt; text-align: justify; }
-                        ul, ol { margin-top: 0; margin-bottom:
+                        ul, ol { margin-top: 0; margin-bottom: 8pt; }
+                        li { margin-bottom: 3pt; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 8pt; margin-bottom: 12pt; }
+                        th, td { border: 1px solid #000000; padding: 5pt 8pt; vertical-align: top; text-align: left; }
+                        th { background-color: #f2f2f2; font-weight: bold; }
+                    </style>
+                </head>
+                <body>
+                    <div class="WordSection1">
+                        ${parsedHtml}
+                        ${wordSignature}
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff', wordTemplate], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            
+            const jenis = document.getElementById('jenis').value.split(' ')[0] || 'Perangkat_Ajar';
+            const mapel = document.getElementById('mapel').value.replace(/[^a-zA-Z0-9]/g, '_');
+            const fileName = `${jenis}_${mapel}.doc`;
+
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = fileName;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
