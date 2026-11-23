@@ -17,8 +17,9 @@
         
         body { font-family: 'Inter', sans-serif; }
         
-        /* Pengaturan cetak PDF */
+        /* Pengaturan cetak PDF (Ukuran Kertas A4) */
         @media print {
+            @page { size: A4; margin: 2cm; }
             body * { visibility: hidden; }
             #resultSection, #resultSection * { visibility: visible; }
             #resultSection { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; box-shadow: none; border: none; }
@@ -135,11 +136,15 @@
         <div id="resultSection" class="hidden bg-white p-6 md:p-10 rounded-2xl shadow-xl border border-gray-100 relative">
             
             <div class="no-print flex flex-wrap justify-end gap-3 mb-8 border-b pb-5">
-                <button onclick="copyText()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl transition flex items-center gap-2">
+                <button onclick="copyText()" class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                     Salin Teks
                 </button>
-                <button onclick="window.print()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white text-sm font-semibold rounded-xl shadow-md transition flex items-center gap-2">
+                <button onclick="exportToWord()" class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-semibold rounded-xl shadow-md transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Unduh Word (A4)
+                </button>
+                <button onclick="window.print()" class="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white text-sm font-semibold rounded-xl shadow-md transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                     Cetak / Unduh PDF
                 </button>
@@ -185,7 +190,7 @@
             generateBtn.disabled = true;
             generateBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
-            const promptText = `Buatkan ${jenis} untuk mata pelajaran ${mapel} kelas ${kelas} dengan topik/materi: ${topik}. 
+            const promptText = `Buatkan ${jenis} untuk mata pelajaran${mapel} kelas ${kelas} dengan topik/materi:${topik}. 
             Berikan struktur yang lengkap, profesional, dan menggunakan pedoman kurikulum yang berlaku di Indonesia. Jika menuliskan rumus atau pecahan matematika, wajib gunakan format LaTeX dengan tanda dolar seperti $\\frac{1}{2}$. Tuliskan dalam format Markdown yang rapi tanpa perlu basa-basi pengantar.`;
 
             try {
@@ -235,6 +240,46 @@
                 alert("Gagal menyalin teks: " + err);
             });
         }
-    </script>
-</body>
-</html>
+
+        function exportToWord() {
+            if (!rawGeneratedText) return;
+
+            // Mengubah sintaks pecahan LaTeX menjadi bentuk pecahan standar agar rapi saat dibuka di MS Word
+            let wordReadyMarkdown = rawGeneratedText
+                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1/$2')
+                .replace(/\\times/g, '×')
+                .replace(/\\div/g, '÷')
+                .replace(/\\pm/g, '±')
+                .replace(/\\leq/g, '≤')
+                .replace(/\\geq/g, '≥')
+                .replace(/\\neq/g, '≠')
+                .replace(/\\\(/g, '')
+                .replace(/\\\)/g, '')
+                .replace(/\$\$/g, '')
+                .replace(/\$/g, '');
+
+            const parsedHtml = marked.parse(wordReadyMarkdown);
+
+            // Struktur dokumen HTML-Word dengan konfigurasi kertas A4 (21cm x 29.7cm)
+            const wordTemplate = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+                      xmlns:w='urn:schemas-microsoft-com:office:word' 
+                      xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>Perangkat Ajar</title>
+                    <style>
+                        @page WordSection1 {
+                            size: 21.0cm 29.7cm;
+                            margin: 2.0cm 2.0cm 2.0cm 2.0cm;
+                            mso-header-margin: 1.0cm;
+                            mso-footer-margin: 1.0cm;
+                            mso-paper-source: 0;
+                        }
+                        div.WordSection1 { page: WordSection1; }
+                        body { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 1.5; color: #000000; }
+                        h1 { font-size: 16pt; font-weight: bold; margin-top: 12pt; margin-bottom: 6pt; text-align: center; }
+                        h2 { font-size: 14pt; font-weight: bold; margin-top: 12pt; margin-bottom: 4pt; }
+                        h3 { font-size: 12pt; font-weight: bold; margin-top: 10pt; margin-bottom: 4pt; }
+                        p { margin-top: 0; margin-bottom: 6pt; text-align: justify; }
+                        ul, ol { margin-top: 0; margin-bottom:
