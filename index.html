@@ -53,7 +53,7 @@
                 <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             </div>
             <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">Generator <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Perangkat Ajar</span></h1>
-            <p class="text-gray-500 mt-2 text-sm md:text-base">Susun RPP, Silabus, LKPD, Soal Evaluasi, CP, dan TP secara otomatis dan terstruktur.</p>
+            <p class="text-gray-500 mt-2 text-sm md:text-base">Susun RPP, Silabus, Materi Ajar, LKPD, Soal Evaluasi, CP, dan TP secara otomatis dan terstruktur.</p>
         </div>
 
         <!-- Form Input -->
@@ -107,6 +107,7 @@
                     <select id="jenis" onchange="toggleTopikField()" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition shadow-sm bg-gray-50 text-gray-700 cursor-pointer hover:bg-white">
                         <option value="RPP">RPP</option>
                         <option value="Silabus Pembelajaran">Silabus Pembelajaran</option>
+                        <option value="Materi Ajar">Materi Ajar</option>
                         <option value="LKPD">LKPD</option>
                         <option value="Soal Evaluasi">Soal Evaluasi</option>
                         <option value="CP (Capaian Pembelajaran)">CP (Capaian Pembelajaran)</option>
@@ -316,7 +317,7 @@
                 Sajikan seluruh elemen capaian pembelajaran dan penurunannya secara sistematis (dalam bentuk narasi dan tabel yang rapi). Jika menuliskan rumus atau pecahan matematika, wajib gunakan format LaTeX dengan tanda dolar seperti $\\frac{1}{2}$. Tuliskan dalam format Markdown yang rapi tanpa basa-basi pengantar dan tanpa kolom tanda tangan di akhir.`;
             } else {
                 promptText = `Buatkan ${jenis} untuk mata pelajaran ${mapel} kelas ${kelas} dengan topik/materi: ${topik}. 
-                Berikan struktur yang lengkap, profesional, dan menggunakan pedoman kurikulum yang berlaku di Indonesia dengan acuan Capaian Pembelajaran (CP) berdasarkan Perubahan atas Keputusan Kepala BSKAP Nomor 046/H/KR/2025. Jika menuliskan rumus atau pecahan matematika, wajib gunakan format LaTeX dengan tanda dolar seperti $\\frac{1}{2}$. Tuliskan dalam format Markdown yang rapi tanpa perlu basa-basi pengantar dan tanpa membuat kolom tanda tangan di bagian akhir.`;
+                Berikan struktur yang lengkap, mendalam, sistematis, dan profesional sesuai pedoman kurikulum yang berlaku di Indonesia dengan acuan Capaian Pembelajaran (CP) berdasarkan Perubahan atas Keputusan Kepala BSKAP Nomor 046/H/KR/2025. Jika menuliskan rumus atau pecahan matematika, wajib gunakan format LaTeX dengan tanda dolar seperti $\\frac{1}{2}$. Tuliskan dalam format Markdown yang rapi tanpa perlu basa-basi pengantar dan tanpa membuat kolom tanda tangan di bagian akhir.`;
             }
 
             try {
@@ -426,7 +427,7 @@
             const blob = new Blob(['\ufeff', wordTemplate], { type: 'application/msword' });
             const url = URL.createObjectURL(blob);
             
-            const jenis = document.getElementById('jenis').value.split(' ')[0] || 'Perangkat_Ajar';
+            const jenis = document.getElementById('jenis').value.replace(/\s+/g, '_');
             const mapel = document.getElementById('mapel').value.replace(/[^a-zA-Z0-9]/g, '_');
             const fileName = `${jenis}_${mapel}.doc`;
 
