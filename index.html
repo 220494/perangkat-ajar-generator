@@ -7,103 +7,145 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* Pengaturan khusus agar rapi saat dicetak ke PDF / Kertas */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Pengaturan cetak PDF */
         @media print {
             body * { visibility: hidden; }
-            #result-section, #result-section * { visibility: visible; }
-            #result-section { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; box-shadow: none; border: none; }
+            #resultSection, #resultSection * { visibility: visible; }
+            #resultSection { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; box-shadow: none; border: none; }
             .no-print { display: none !important; }
         }
         
-        /* Styling tambahan untuk hasil render Markdown agar menyerupai dokumen resmi */
-        .prose h1 { font-size: 1.75rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #1f2937; }
-        .prose h2 { font-size: 1.5rem; font-weight: bold; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #374151; }
-        .prose h3 { font-size: 1.25rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #4b5563; }
-        .prose p { margin-bottom: 0.75rem; line-height: 1.6; }
+        /* Styling Render Markdown */
+        .prose h1 { font-size: 1.75rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #1e3a8a; }
+        .prose h2 { font-size: 1.5rem; font-weight: 700; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #2563eb; }
+        .prose h3 { font-size: 1.25rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #3b82f6; }
+        .prose p { margin-bottom: 0.75rem; line-height: 1.7; color: #374151; }
         .prose ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
         .prose ol { list-style-type: decimal; margin-left: 1.5rem; margin-bottom: 1rem; }
-        .prose li { margin-bottom: 0.25rem; }
+        .prose li { margin-bottom: 0.3rem; color: #374151; }
         .prose table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
         .prose th, .prose td { border: 1px solid #d1d5db; padding: 0.75rem; text-align: left; }
         .prose th { background-color: #f3f4f6; font-weight: 600; }
         .prose strong { font-weight: 700; color: #111827; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-4 md:p-8">
 
-    <div class="max-w-4xl mx-auto space-y-6">
+    <div class="max-w-4xl mx-auto space-y-8">
         
         <!-- Header -->
-        <div class="text-center no-print">
-            <h1 class="text-3xl font-bold text-blue-700">Generator Perangkat Ajar</h1>
-            <p class="text-gray-600 mt-2">Buat Modul Ajar, RPP, atau LKPD terstruktur secara otomatis dengan AI.</p>
+        <div class="text-center no-print mt-4">
+            <div class="inline-block p-3 rounded-full bg-white shadow-sm mb-3">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">Generator <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Perangkat Ajar</span></h1>
+            <p class="text-gray-500 mt-2 text-sm md:text-base">Susun Modul Ajar, RPP, dan LKPD secara otomatis, cepat, dan terstruktur.</p>
         </div>
 
         <!-- Form Input -->
-        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 no-print">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100 no-print relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -z-10 opacity-50"></div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 z-10">
                 
+                <!-- Dropdown Mata Pelajaran -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran</label>
-                    <input type="text" id="mapel" placeholder="Contoh: Matematika, IPAS, Bahasa Indonesia" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">Mata Pelajaran</label>
+                    <select id="mapel" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition shadow-sm bg-gray-50 text-gray-700 cursor-pointer hover:bg-white">
+                        <option value="" disabled selected>-- Pilih Mata Pelajaran --</option>
+                        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                        <option value="Matematika">Matematika</option>
+                        <option value="Ilmu Pengetahuan Alam dan Sosial (IPAS)">IPAS</option>
+                        <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
+                        <option value="Bahasa Inggris">Bahasa Inggris</option>
+                        <option value="Pendidikan Agama">Pendidikan Agama</option>
+                        <option value="Seni Budaya">Seni Budaya</option>
+                        <option value="PJOK">PJOK</option>
+                        <option value="Informatika">Informatika</option>
+                        <option value="Mata Pelajaran Lainnya">Lainnya (Spesifikkan di Topik)</option>
+                    </select>
                 </div>
                 
+                <!-- Dropdown Kelas / Fase -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Kelas / Fase</label>
-                    <input type="text" id="kelas" placeholder="Contoh: Kelas 4, Fase B" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-                </div>
-                
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Topik / Materi Pembelajaran</label>
-                    <textarea id="topik" rows="2" placeholder="Contoh: Pecahan Senilai, Fotosintesis, atau Teks Deskripsi" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"></textarea>
-                </div>
-                
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Dokumen</label>
-                    <select id="jenis" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
-                        <option value="Modul Ajar (Kurikulum Merdeka)">Modul Ajar (Kurikulum Merdeka)</option>
-                        <option value="RPP (Rencana Pelaksanaan Pembelajaran)">RPP</option>
-                        <option value="LKPD (Lembar Kerja Peserta Didik)">LKPD</option>
-                        <option value="Silabus">Silabus</option>
-                        <option value="Soal Evaluasi / Latihan">Soal Evaluasi / Latihan</option>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">Kelas / Fase</label>
+                    <select id="kelas" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition shadow-sm bg-gray-50 text-gray-700 cursor-pointer hover:bg-white">
+                        <option value="" disabled selected>-- Pilih Kelas / Fase --</option>
+                        <optgroup label="SD / MI">
+                            <option value="Fase A (Kelas 1-2)">Fase A (Kelas 1-2)</option>
+                            <option value="Fase B (Kelas 3-4)">Fase B (Kelas 3-4)</option>
+                            <option value="Fase C (Kelas 5-6)">Fase C (Kelas 5-6)</option>
+                        </optgroup>
+                        <optgroup label="SMP / MTs">
+                            <option value="Fase D (Kelas 7-9)">Fase D (Kelas 7-9)</option>
+                        </optgroup>
+                        <optgroup label="SMA / SMK / MA">
+                            <option value="Fase E (Kelas 10)">Fase E (Kelas 10)</option>
+                            <option value="Fase F (Kelas 11-12)">Fase F (Kelas 11-12)</option>
+                        </optgroup>
                     </select>
                 </div>
 
+                <!-- Dropdown Jenis Dokumen -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">Jenis Dokumen</label>
+                    <select id="jenis" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition shadow-sm bg-gray-50 text-gray-700 cursor-pointer hover:bg-white">
+                        <option value="Modul Ajar (Kurikulum Merdeka)">Modul Ajar (Kurikulum Merdeka)</option>
+                        <option value="RPP (Rencana Pelaksanaan Pembelajaran)">RPP (K13 / Umum)</option>
+                        <option value="LKPD (Lembar Kerja Peserta Didik)">LKPD (Lembar Kerja)</option>
+                        <option value="Silabus">Silabus Pembelajaran</option>
+                        <option value="Soal Evaluasi / Latihan">Soal Evaluasi / Asesmen</option>
+                    </select>
+                </div>
+                
+                <!-- Textarea Topik -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">Topik / Materi Pembelajaran</label>
+                    <textarea id="topik" rows="3" placeholder="Contoh: Operasi Hitung Pecahan Campuran, Siklus Air, atau Menulis Teks Deskripsi..." class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition shadow-sm bg-gray-50 text-gray-700 hover:bg-white resize-none"></textarea>
+                </div>
             </div>
 
-            <button id="generateBtn" onclick="generateDocument()" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow transition duration-200 flex justify-center items-center gap-2">
+            <button id="generateBtn" onclick="generateDocument()" class="w-full mt-7 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl transform transition-all active:scale-[0.98] flex justify-center items-center gap-2 text-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                 <span>Buat Dokumen Sekarang</span>
             </button>
 
             <!-- Loading & Error Indicators -->
-            <div id="loadingIndicator" class="hidden mt-4 text-center text-blue-600 font-medium animate-pulse">
-                Sedang menyusun dokumen... Mohon tunggu sebentar.
+            <div id="loadingIndicator" class="hidden mt-6 text-center">
+                <div class="inline-flex items-center gap-2 text-blue-600 font-medium bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
+                    <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    Sedang menyusun dokumen...
+                </div>
             </div>
-            <div id="errorMessage" class="hidden mt-4 text-center text-red-600 font-medium p-3 bg-red-50 rounded-lg border border-red-200">
+            <div id="errorMessage" class="hidden mt-5 text-center text-red-600 font-medium p-4 bg-red-50 rounded-xl border border-red-200">
             </div>
         </div>
 
         <!-- Result Section -->
-        <div id="resultSection" class="hidden bg-white p-8 rounded-xl shadow-md border border-gray-200 relative">
+        <div id="resultSection" class="hidden bg-white p-6 md:p-10 rounded-2xl shadow-xl border border-gray-100 relative">
             
-            <div class="no-print flex justify-end gap-3 mb-6 border-b pb-4">
-                <button onclick="copyText()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition">
-                    Salin Teks (Copy)
+            <div class="no-print flex flex-wrap justify-end gap-3 mb-8 border-b pb-5">
+                <button onclick="copyText()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    Salin Teks
                 </button>
-                <button onclick="window.print()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow transition">
-                    Cetak / Simpan PDF
+                <button onclick="window.print()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white text-sm font-semibold rounded-xl shadow-md transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Cetak / Unduh PDF
                 </button>
             </div>
 
             <!-- Konten Markdown akan dirender di sini -->
             <div id="outputContent" class="prose max-w-none text-gray-800"></div>
-            
         </div>
 
     </div>
 
     <script>
-        // PASTIKAN ANDA MENGGANTI URL DI BAWAH INI DENGAN URL CLOUDFLARE WORKER ANDA
         const WORKER_URL = "https://perangkat-ajar-proxy.dianpamungkas24.workers.dev/";
 
         const generateBtn = document.getElementById('generateBtn');
@@ -114,8 +156,8 @@
         let rawGeneratedText = "";
 
         async function generateDocument() {
-            const mapel = document.getElementById('mapel').value.trim();
-            const kelas = document.getElementById('kelas').value.trim();
+            const mapel = document.getElementById('mapel').value;
+            const kelas = document.getElementById('kelas').value;
             const topik = document.getElementById('topik').value.trim();
             const jenis = document.getElementById('jenis').value;
             
@@ -124,7 +166,6 @@
                 return;
             }
 
-            // Persiapan UI: Tampilkan loading, sembunyikan error & hasil
             loadingIndicator.classList.remove('hidden');
             resultSection.classList.add('hidden');
             errorMessage.classList.add('hidden');
@@ -137,9 +178,7 @@
             try {
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ prompt: promptText })
                 });
 
@@ -149,10 +188,7 @@
                     throw new Error(data.error?.message || data.error || `Gagal menghubungi server (Status: ${response.status})`);
                 }
 
-                // Mengekstrak hasil dari JSON Groq
                 rawGeneratedText = data.choices[0].message.content;
-
-                // Render Markdown ke HTML menggunakan marked.js
                 outputContent.innerHTML = marked.parse(rawGeneratedText);
                 resultSection.classList.remove('hidden');
 
